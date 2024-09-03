@@ -1,0 +1,4 @@
+sources:
+  "2023":
+    url: https://github.com/winfsp/winfsp/archive/refs/tags/v2.0.zip
+    sha256: bfa8a95275241e23ae1fa22031302ad8e4d8654aa1754f0cc973a9d15a65c39a
