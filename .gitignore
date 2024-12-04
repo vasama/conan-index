@@ -1,0 +1,2 @@
+recipes/*/*/test_package/build/
+recipes/*/*/test_package/CMakeUserPresets.json
