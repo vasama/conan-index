@@ -1,0 +1,4 @@
+sources:
+  "0.0.20241218":
+    url: https://github.com/vasama/stdexec.git
+    commit: 833e5a4b8df0688b83b0bbdcaf0bfd098b2da87b
