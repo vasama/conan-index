@@ -1,0 +1,30 @@
+on:
+  workflow_dispatch:
+    inputs:
+      package_name:
+        description: 'Package name'
+        required: true
+        type: string
+      package_version:
+        description: 'Package version'
+        required: true
+        type: string
+
+jobs:
+  export-package:
+    runs-on: ubuntu-24.04
+    name: "Export Conan package: ${{ github.event.client_payload.package_name }}"
+
+    container:
+      image: ghcr.io/vasama/actions:2024121302
+
+    steps:
+    - name: Check out conan-index
+      uses: actions/checkout@v4
+
+    - name: "Export Conan package: ${{ github.event.client_payload.package_name }}"
+      run: |
+        .github/export-package.ps1 \
+          -PackageName ${{ github.event.client_payload.package_name }} \
+          -PackageVersion ${{ github.event.client_payload.package_version }} \
+          -PackageUser vasama -Remote vasama.org

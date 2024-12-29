@@ -1,0 +1,43 @@
+on:
+  workflow_dispatch:
+    inputs:
+      package_path:
+        description: 'Package path'
+        required: true
+        type: string
+      package_name:
+        description: 'Package name'
+        required: true
+        type: string
+      package_version:
+        description: 'Package version'
+        required: true
+        type: string
+      github_repository:
+        description: 'GitHub repository'
+        required: true
+        type: string
+
+concurrency:
+  group: create-package
+
+jobs:
+  create-package:
+    runs-on: ubuntu-24.04
+    name: "Create Conan package: ${{ inputs.package_name }}"
+
+    container:
+      image: ghcr.io/vasama/actions:2024121302
+
+    steps:
+    - name: Check out conan-index
+      uses: actions/checkout@v4
+
+    - name: "Create Conan package: ${{ inputs.package_name }}"
+      run: |
+        .github/create-package.ps1 \
+          -PackageName ${{ inputs.package_name }} \
+          -PackageVersion ${{ inputs.package_version }} \
+          -PackagePath ${{ inputs.package_path }} \
+          -GitHubRepository ${{ inputs.github_repository }} \
+          -GitHubReference ${{ inputs.github_reference }}
