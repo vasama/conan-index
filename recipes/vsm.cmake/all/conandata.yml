@@ -1,0 +1,4 @@
+sources:
+  "0.1":
+    url: https://github.com/vasama/vsm/archive/refs/tags/release/cmake/0.1.zip
+    sha256: e597fa522d4b597c717137f91195a55674cde4c712ff1c1ccdb7f82dbf1a2f41
