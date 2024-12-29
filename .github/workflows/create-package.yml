@@ -1,0 +1,77 @@
+name: "Create Package"
+run-name: "Create package: ${{ inputs.package_name }}/${{ inputs.package_version }}"
+
+on:
+  workflow_dispatch:
+    inputs:
+      package_path:
+        description: 'Package path'
+        required: true
+        type: string
+      package_name:
+        description: 'Package name'
+        required: true
+        type: string
+      package_version:
+        description: 'Package version'
+        required: true
+        type: string
+      github_repository:
+        description: 'GitHub repository'
+        required: true
+        type: string
+      github_reference:
+        description: 'GitHub reference'
+        required: true
+        type: string
+
+concurrency:
+  group: create-package
+
+jobs:
+  create-package:
+    runs-on: ubuntu-24.04
+    name: "Create package: ${{ inputs.package_name }}"
+
+    permissions:
+      contents: write
+
+    container:
+      image: ghcr.io/vasama/actions:2024121302
+      options: --user 1001 # GitHub runner user
+
+    steps:
+    - name: Set Git user information
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+    - name: Set up Python virtual environment
+      run: |
+        python3 -m venv $HOME/.venv
+        echo PATH=$HOME/.venv/bin:$PATH >> $GITHUB_ENV
+
+    - name: Install Python dependencies
+      run: pip --no-cache-dir install pyyaml frozendict
+
+    - name: Check out conan-index
+      uses: actions/checkout@v4
+
+      #TODO: Get rid of this when the container is updated
+    - name: Install Conan config
+      run: conan config install .github/conan
+
+    - name: Add local Conan remote
+      run: conan remote add local .
+
+    - name: "Create package: ${{ inputs.package_name }}"
+      run: |
+        .github/create-package.ps1 \
+          -PackageName ${{ inputs.package_name }} \
+          -PackageVersion ${{ inputs.package_version }} \
+          -PackagePath ${{ inputs.package_path }} \
+          -GitHubRepository ${{ inputs.github_repository }} \
+          -GitHubReference ${{ inputs.github_reference }}
+
+    - name: Debugging
+      run: ls -al
