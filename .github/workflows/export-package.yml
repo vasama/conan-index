@@ -1,0 +1,40 @@
+name: "Export Package"
+run-name: "Export package: ${{ inputs.package_name }}/${{ inputs.package_version }}"
+
+on:
+  workflow_dispatch:
+    inputs:
+      package_name:
+        description: 'Package name'
+        required: true
+        type: string
+      package_version:
+        description: 'Package version'
+        required: true
+        type: string
+
+jobs:
+  export-package:
+    runs-on: ubuntu-24.04
+    name: "Export package: ${{ inputs.package_name }}/${{ inputs.package_version }}"
+
+    container:
+      image: ghcr.io/vasama/actions:2024121302
+      options: --user 1001 # GitHub runner user
+
+    steps:
+    - name: Conan add remote and login
+      run: |
+        conan remote add vasama.org https://conan.vasama.org
+        conan remote login vasama.org github-actions -p ${{ secrets.ARTIFACTORY_TOKEN }}
+
+    - name: Check out conan-index
+      uses: actions/checkout@v4
+
+    - name: "Export package: ${{ inputs.package_name }}/${{ inputs.package_version }}"
+      run: |
+        .github/export-package.ps1 \
+          -PackageName ${{ inputs.package_name }} \
+          -PackageVersion ${{ inputs.package_version }} \
+          -PackageUser vasama \
+          -Remote vasama.org
